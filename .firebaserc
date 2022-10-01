@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "ng-fitness-tracker-914f8"
+  },
+  "targets": {
+    "ng-fitness-tracker-914f8": {
+      "hosting": {
+        "angular-material": [
+          "ng-fitness-tracker-914f8"
+        ]
+      }
+    }
   }
 }
