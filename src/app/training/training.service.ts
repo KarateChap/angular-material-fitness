@@ -14,6 +14,7 @@ import {
 import { Injectable } from '@angular/core';
 import { addDoc } from 'firebase/firestore';
 import { Subscription } from 'rxjs';
+import { UIService } from '../shared/ui.service';
 
 @Injectable()
 export class TrainingService {
@@ -24,16 +25,22 @@ export class TrainingService {
   private runningExercise: Exercise;
   private fbSubs: Subscription[] = [];
 
-  constructor(private firestore: Firestore) {}
+  constructor(private firestore: Firestore, private uiService: UIService) {}
 
   fetchAvailableExercises() {
+    this.uiService.loadingStateChanged.next(true);
     const colRef = collection(this.firestore, 'availableExercises');
 
     this.fbSubs.push(
       collectionData(colRef, { idField: 'id' }).subscribe(
         (exercises: Exercise[]) => {
+          this.uiService.loadingStateChanged.next(false);
           this.availableExercises = exercises;
           this.exercisesChanged.next([...this.availableExercises]);
+        }, error => {
+          this.uiService.loadingStateChanged.next(false);
+          this.uiService.showSnackbar('Fetching exercises failed, please try again later.', null, 3000)
+          this.exercisesChanged.next(null);
         }
       )
     );
